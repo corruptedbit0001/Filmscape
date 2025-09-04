@@ -16,3 +16,9 @@ A desktop application that offers a seamless experience for watching embedded co
 - Watchlist
 - Bookmarks
 - Notifications
+- Application Color wheel
+
+## Instalation
+- Download latest release for your operating system
+- Unpack the zip file
+- Run the application from Filmscape.exe
