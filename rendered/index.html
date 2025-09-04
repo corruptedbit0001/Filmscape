@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script type="text/javascript" defer src="./appFunctions.js"></script>
+    <title>Home Movies</title>
+</head>
+<body>
+    <div id="back"></div>
+    <section id="mainbody" class="main-body">
+        <div class="topbar">
+            <img id="logo" src="./images/Logo.png" alt="">
+            <div class="sidenav">
+                <a  id="settings" class="menu-item" ><span class="material-symbols-outlined">menu</span></a>
+                <a  id="err" class="menu-item" value="homepage"><span class="material-symbols-outlined">home</span> Home</a>
+                <a  class="menu-item" value="moviespage"><span class="material-symbols-outlined">movie</span> Movies</a>
+                <a  class="menu-item" value="tvshowspage"><span class="material-symbols-outlined">tv</span> TvShows</a>
+                <a  class="menu-item" value="bookmarkpage"><span class="material-symbols-outlined">bookmarks</span> Bookmarks</a>
+            </div>
+            <form >
+                <div class="search">
+                    <span class="search-icon material-symbols-outlined" >search</span>
+                    <input id="search" class="search-input" type="" placeholder="Search">
+                </div>
+                
+            </form>
+            <div class="topbar-btns">
+                <a id="notifications" class="menu-item">
+                    <span class="material-symbols-outlined">
+                    notifications <span id="notif_num">1</span>
+                    </span>
+                </a>
+                <button id="minBtn" class="top-btn min-btn"></button>
+                <button id="maxBtn" class="top-btn max-btn"></button>
+                <button id="closeBtn" class="top-btn close-btn"></button>
+            </div>
+            
+
+        </div>
+       
+        <div id="content">
+           
+
+        </div>
+        <div id="settings_conteiner" class="settings">
+            <div>
+            <span>Main color:</span><input id="colorPicker" type="color" value="#417564">
+            <span id="main_undo" class="undo material-symbols-outlined">undo</span>
+            </div>
+            <div>
+            <span>Main text color:</span><input id="textcolorPicker" type="color" value="#e3e3e3">
+            <span id="main_text_undo" class="undo material-symbols-outlined">undo</span>
+            </div>
+            <div>
+            <span>Secondary text color:</span><input id="sectextcolorPicker" type="color" value="#717171">
+            <span id="sec_text_undo" class="undo material-symbols-outlined">undo</span>
+            </div>
+            <div>
+            <span>Background color:</span><input id="backcolorPicker" type="color" value="#1c1c1c">
+            <span id="back_undo" class="undo material-symbols-outlined">undo</span>
+            </div>
+        </div>
+        <div id="notifications_container" ><a id="clear_all_notif">clear all</a>
+            <h4>New Episodes</h4>
+        </div>
+        <div id="alerte"></div>
+        <div id="tooltip" >
+            <div style="padding: 10px;">
+                <div style="border-bottom: 1px solid #1c1c1c;">
+                    <h3 id="tooltip_title"></h3>
+                    <div>
+                        <span class="type">HD</span>
+                        <span id="tooltip_year"></span>
+                        <img width="15px" height="15px" src="images/icons8-rating-50.png">
+                        <span  id="tooltip_rating"></span>
+                    </div>
+                </div>
+                <div>
+                    <div id="meta-country">
+                        <span>Country:</span>
+                        <span id="tooltip_country"></span>
+                    </div>
+                    <div id="meta-genre">
+                        <span>Genre:</span>
+                        <span id="tooltip_genre"></span>
+                    </div>
+                    <p id="tooltip_desc"></p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <script type="text/javascript" src="./UserDataFunctions.js"></script>
+    <script type="text/javascript" src="./DisplayHome.js"></script>
+    <script type="text/javascript" src="./DisplayNotifications.js"></script>
+    <script type="text/javascript" src="./DisplayBookmarks.js"></script>
+    <script type="text/javascript" src="./DisplayMoviesTvShows.js"></script>
+    <script type="text/javascript" src="./DisplaySearch.js"></script>
+    <script type="text/javascript" src="./DisplayWatchPage.js"></script>
+    <script type="text/javascript" src="./pages.js"></script>
+</body>
+
+</html>
