@@ -29,11 +29,11 @@ notifications.addEventListener("click",()=>{
     }
     
 });
-function CheckIsGreater(current_date,date){
+function CheckIsGreater(date,current_date){
     
-    return date.getDate() >= current_date.getDate() &&
-         date.getMonth() >= current_date.getMonth() &&
-         date.getFullYear() === current_date.getFullYear();
+    return current_date.getDate() >= date.getDate() &&
+         current_date.getMonth()+1 >= date.getMonth() &&
+         current_date.getFullYear() >= date.getFullYear();
 
 } 
 async function GetTvShowJson(i) {
@@ -62,24 +62,24 @@ async function GetTvShows() {
     let arr = [];
     let today = new Date();
     for(let i = 0; i < bookmarkes.tv_id?.length;i++){
-        if(CheckIsGreater(today,new Date(bookmarkes.tv_id[i].last_update) )){
+        if(!CheckIsGreater(new Date(bookmarkes.tv_id[i].last_update),today)){
             continue;
         }
         
         let json = await GetTvShowJson(i);
         let lastair = new Date( ( json.last_episode_to_air ? json.last_episode_to_air?.air_date : json.last_air_date));
         
-        if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode-1 == json.last_episode_to_air?.episode_number ){
-            
+        if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode+1 == json.last_episode_to_air?.episode_number ){
+            console.log("HERE "+json.name);
             notif_num.style.display = "block";
-            bookmarkes.new_episodes[i] = {
+            bookmarkes.new_episodes.push({
                 id : ""+json.id,
                 last_update : ""+lastair.getFullYear()+"-"+(lastair.getMonth()+1)+"-"+lastair.getDate(),
                 last_ep_update : json.last_episode_to_air ? json.last_episode_to_air?.episode_number : 0,
                 last_season_update : (json.last_episode_to_air ? json.last_episode_to_air.season_number : 1),
                 poster_path: json.poster_path,
                 name: json.name
-            };
+            });
             bookmarkes.tv_id[i].last_update = ""+lastair.getFullYear()+"-"+(lastair.getMonth()+1)+"-"+lastair.getDate();
             bookmarkes.tv_id[i].season = (json.last_episode_to_air ? json.last_episode_to_air.season_number : 1);
             bookmarkes.tv_id[i].episode = json.last_episode_to_air ? json.last_episode_to_air?.episode_number : 0
@@ -90,7 +90,7 @@ async function GetTvShows() {
             
             
         }else if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode < json.last_episode_to_air?.episode_number ){
-            
+            console.log("HERE 2 "+json.name);
             let json2 = await GetSeasonEp(json);
             for (let j = bookmarkes.tv_id[i].episode; j < json.last_episode_to_air?.episode_number; j++) {
                 let ep_air_date = new Date(json2.episodes[j].air_date);
@@ -138,7 +138,7 @@ async function GetLatestEpisodes(){
     await GetTvShows();
     res = bookmarkes.new_episodes;
     console.log(bookmarkes.new_episodes);
-    res?.sort((a,b)=>{ return b.last_update.localeCompare(a.last_update) });
+    res?.sort((a,b)=>{ return new Date(b.last_update) - new Date(a.last_update) });
     
     for (let i = 0; i < res.length; i++) {
         // let ls = (res[i].last_episode_to_air ? res[i].last_episode_to_air.season_number : 1);
@@ -201,6 +201,8 @@ async function GetLatestEpisodes(){
     clear_all_notif.addEventListener("click",()=>{ console.log("deleting all notif");
         if(bookmarkes.new_episodes && bookmarkes.new_episodes.length > 0){
             bookmarkes.new_episodes = [];
+            notifications_container.innerHTML = `<a id="clear_all_notif">clear all</a>
+            <h4>New Episodes</h4>`;
             window.electronAPI.AddNewEpisodes(bookmarkes);
         }
     });
