@@ -238,7 +238,7 @@ function NextPrevEpControls(type,seasons,maxseason,id){
 function CheckIsBookmarkedPage(id,type){
   if(type == "tv"){
     
-      for (let i = 0; i < bookmarkes.tv_id?.length; i++) {
+      for (let i = 0; i < bookmarkes?.tv_id?.length; i++) {
         if(id== bookmarkes.tv_id[i].id){
           add_book.firstElementChild.innerText = "bookmark_remove"
           add_book.children[1].innerText = "Remove from bookmarks";
@@ -248,7 +248,7 @@ function CheckIsBookmarkedPage(id,type){
     
   }else{
     
-      for (let i = 0; i < bookmarkes.movies_id?.length; i++) {
+      for (let i = 0; i < bookmarkes?.movies_id?.length; i++) {
         if(id== bookmarkes.movies_id[i].id){
           add_book.firstElementChild.innerText = "bookmark_remove"
           add_book.children[1].innerText = "Remove from bookmarks";
@@ -274,12 +274,10 @@ function CheckIsBookmarkedPage(id,type){
     });
 }
 function CheckForBookmarks(bookclass,item){
-  if(!bookmarkes){
-    return;
-  }
+  
   //item.addEventListener('mouseenter', () => {
   if(bookclass == ".bookmark"){
-    for (let i = 0; i < bookmarkes.movies_id?.length; i++) {
+    for (let i = 0; i < bookmarkes?.movies_id?.length; i++) {
       if(item.dataset.id == bookmarkes.movies_id[i].id){
         item.innerText = 'bookmark_remove'; 
         //console.log("Found movie");
@@ -288,7 +286,7 @@ function CheckForBookmarks(bookclass,item){
       
     }
   }else if(bookclass == ".bookmarktv"){
-    for (let i = 0; i < bookmarkes.tv_id?.length; i++) {
+    for (let i = 0; i < bookmarkes?.tv_id?.length; i++) {
       if(item.dataset.id == bookmarkes.tv_id[i].id){
         item.innerText = 'bookmark_remove'; 
         //console.log("Found tv");
