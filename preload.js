@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestColors : () => ipcRenderer.send("request-colors"),
   onUpdateColors : (callback) => ipcRenderer.on('update-colors', (_event, value) => callback(value)),
   AddNewEpisodes : (episodes) => ipcRenderer.send("update-new-episodes",episodes),
+  getAppVersion : () => ipcRenderer.invoke("get-app-version"),
 })

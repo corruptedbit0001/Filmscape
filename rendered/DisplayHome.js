@@ -11,7 +11,7 @@ function ShowTooltip(item){
   tooltip.style.display = "block";
   tooltip.style.height = "auto";
   tooltip.style.top = yPosition+"px";
-  tooltip.style.left = xPosition+width+"px";
+  tooltip.style.left = xPosition+width+300 < window.innerWidth ? xPosition+width+"px" : xPosition-300+"px";
   const  url = 'https://api.themoviedb.org/3/'+item.dataset.type+'/'+item.dataset.id+'?language=en-US';
             
   fetch(url,options)
@@ -294,4 +294,5 @@ function DisplayHome(){
       })
       
       DisplayLatestUpload();
+      GetAppVersion();
 }

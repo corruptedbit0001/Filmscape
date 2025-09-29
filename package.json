@@ -1,8 +1,8 @@
 {
   "type": "module",
   "name": "homemovies",
-  "productName": "HomeMovies",
-  "version": "1.0.0",
+  "productName": "Filmscape",
+  "version": "1.0.3",
   "description": "app to watch web movies",
   "main": "main.js",
   "scripts": {

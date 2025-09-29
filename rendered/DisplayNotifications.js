@@ -66,33 +66,19 @@ async function GetTvShows() {
             continue;
         }
         
+        
         let json = await GetTvShowJson(i);
+
+        if(bookmarkes.tv_id[i].season == json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode == json.last_episode_to_air?.episode_number ){
+            continue;
+        }
         let lastair = new Date( ( json.last_episode_to_air ? json.last_episode_to_air?.air_date : json.last_air_date));
         
-        if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode+1 == json.last_episode_to_air?.episode_number ){
-            console.log("HERE "+json.name);
-            notif_num.style.display = "block";
-            bookmarkes.new_episodes.push({
-                id : ""+json.id,
-                last_update : ""+lastair.getFullYear()+"-"+(lastair.getMonth()+1)+"-"+lastair.getDate(),
-                last_ep_update : json.last_episode_to_air ? json.last_episode_to_air?.episode_number : 0,
-                last_season_update : (json.last_episode_to_air ? json.last_episode_to_air.season_number : 1),
-                poster_path: json.poster_path,
-                name: json.name
-            });
-            bookmarkes.tv_id[i].last_update = ""+lastair.getFullYear()+"-"+(lastair.getMonth()+1)+"-"+lastair.getDate();
-            bookmarkes.tv_id[i].season = (json.last_episode_to_air ? json.last_episode_to_air.season_number : 1);
-            bookmarkes.tv_id[i].episode = json.last_episode_to_air ? json.last_episode_to_air?.episode_number : 0
-            bookmarkes.opened_notif = false;
-            number_of_notif++;
-            arr.push(json);
-            
-            
-            
-        }else if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode < json.last_episode_to_air?.episode_number ){
+        if(bookmarkes.tv_id[i].season <= json.last_episode_to_air?.season_number || bookmarkes.tv_id[i].episode < json.last_episode_to_air?.episode_number ){
             console.log("HERE 2 "+json.name);
             let json2 = await GetSeasonEp(json);
-            for (let j = bookmarkes.tv_id[i].episode; j < json.last_episode_to_air?.episode_number; j++) {
+            var startep = (bookmarkes.tv_id[i].season == json.last_episode_to_air?.season_number ? bookmarkes.tv_id[i].episode : 0 ) 
+            for (let j = startep; j < json.last_episode_to_air?.episode_number; j++) {
                 let ep_air_date = new Date(json2.episodes[j].air_date);
                 notif_num.style.display = "block";
                 bookmarkes.new_episodes.push({

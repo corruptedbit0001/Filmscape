@@ -314,7 +314,9 @@ async function createMainWindow(){
   ipc.on("remove-watched",(eveent,id,type)=>{
     RemoveWatched(id,type);
   });
-
+  ipc.handle("get-app-version",()=>{
+     return app.getVersion();
+  });
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

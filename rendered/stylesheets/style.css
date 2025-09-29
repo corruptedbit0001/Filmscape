@@ -970,3 +970,9 @@ input[type="color"]::-webkit-color-swatch {
 #notifications_container::-webkit-scrollbar-track{
   margin-top: 0;
 }
+#appVersion{
+  position: absolute;
+  bottom: 80px;
+  left: 10px;
+  color: var(--secTextCol);
+}
