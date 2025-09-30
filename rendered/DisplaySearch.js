@@ -104,6 +104,8 @@ async function DisplaySearch(){
             document.querySelectorAll(".link-tv").forEach((item,index)=>{
               item.parentElement.getElementsByClassName("type")[0].innerText = "SS "+(tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.season_number : 1 );
               item.parentElement.getElementsByClassName("epid")[0].innerHTML = 'EP '+(tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.episode_number : 0 );
+              item.dataset.ep = (tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.episode_number : 0 );
+              item.dataset.season = (tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.season_number : 1 );
             });
             
 
@@ -112,7 +114,7 @@ async function DisplaySearch(){
             document.querySelectorAll(".bookmarktv").forEach((item,index)=>{
               CheckForBookmarks(".bookmarktv",item);
               item.dataset.season = (tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.season_number : 1 );
-              item.dataset.ep = (tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.episode_number : 1 );
+              item.dataset.ep = (tvdetails[index].last_episode_to_air ? tvdetails[index].last_episode_to_air.episode_number : 0 );
               item.addEventListener("click",function(){
                 alerte.style.display = "block";
                 if(item.innerText == "bookmark_add")

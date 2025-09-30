@@ -14,7 +14,7 @@ content.addEventListener("click",()=>{
 notifications.addEventListener("click",()=>{
     if(!notif_open){
         //notifications_container.style.display = "block";
-        notifications_container.style.height = "180px";
+        notifications_container.style.height = "280px";
         notifications_container.style.padding = "5px";
         notif_open = true;
         notif_num.style.display = "none";
@@ -81,6 +81,7 @@ async function GetTvShows() {
             for (let j = startep; j < json.last_episode_to_air?.episode_number; j++) {
                 let ep_air_date = new Date(json2.episodes[j].air_date);
                 notif_num.style.display = "block";
+                !bookmarkes.new_episodes ? bookmarkes.new_episodes = [] : "";
                 bookmarkes.new_episodes.push({
                     id : ""+json.id,
                     last_update : ""+ep_air_date.getFullYear()+"-"+(ep_air_date.getMonth()+1)+"-"+ep_air_date.getDate(),
