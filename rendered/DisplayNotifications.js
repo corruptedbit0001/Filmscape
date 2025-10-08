@@ -62,7 +62,7 @@ async function GetTvShows() {
     let arr = [];
     let today = new Date();
     for(let i = 0; i < bookmarkes.tv_id?.length;i++){
-        if(!CheckIsGreater(new Date(bookmarkes.tv_id[i].last_update),today)){
+        if(!CheckIsGreater(today,new Date(bookmarkes.tv_id[i].last_update))){
             continue;
         }
         
