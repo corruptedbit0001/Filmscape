@@ -15,7 +15,6 @@ maxBtn.addEventListener("click",()=>{
     window.electronAPI.maxApp("minimizeApp")
 });
 
-
 async function GetAppVersion() {
     const version = await window.electronAPI.getAppVersion();
     appVersion.innerText = "Filmscape v"+ version;

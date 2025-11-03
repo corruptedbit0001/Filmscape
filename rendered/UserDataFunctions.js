@@ -1,8 +1,11 @@
 let bookmarkes;
-let watched;
+let watched = null;
+let countries;
 let conectedEp = false;
 let maxep = 0;
 let expanded = false;
+let watched_pag = 1;
+let clear_watched_open = false;
 
 let maincol = "#417564";
 let maintextcol = "#e3e3e3";
@@ -14,6 +17,11 @@ window.electronAPI.onUpdateBookmarks((value) => {
       GetLatestEpisodes();
   
 });
+window.electronAPI.onUpdateCountries((value) => {
+  countries = value;
+  //console.log(countries);
+});
+window.electronAPI.requestCountries();
 window.electronAPI.onUpdateColors((value) => {
   loadedColors = true;
   maincol = value[0].maincol;
@@ -117,16 +125,55 @@ function DisplayWatchedItem(id,tv, poster,year,season,ep,title,aclass,quality,bo
                   
                   <p style="width:180px;height:40px;margin: 0px;">`+title+`</p></div> </div>`;
 }
+function AddPaginationWatched(length){
+  let str = ``;
+  var add = Number(watched_pag) + 3;
+  const minnum = clamp(Number(watched_pag)-2,1,Math.ceil(length/8));
+  const maxnum = clamp(Number(watched_pag)+2,1,Math.ceil(length/8));
+  //console.log("Min page: "+minnum+" Max page: "+maxnum);
+  if(minnum == maxnum)
+    return;
+  if(watched_pag > 1){
+    str += `<a  data-page="1"  class="fisrtpag pag"> << </a>`
+    str += `<a  data-page="`+(Number(watched_pag)-1)+`"  class="pag"> < </a>`
+  }
+  if(minnum > 1){
+    str += `<span style='float:left'> ... </span>`
+  }
+  for (let index = minnum; index <= maxnum; index++) {
+    str += `<a  data-page="`+index+`"  class="pag `+(index == watched_pag? 'active':"")+`">`+index+`</a>`;
+  }
+  
+  if(maxnum*8 < length){
+    str += `<span style='float:left'> ... </span>`
+  }
+  if(watched_pag*8 < length){
+    str += `<a  data-page="`+(Number(watched_pag)+1)+`"  class="pag"> > </a>`
+    str += `<a  data-page="`+Math.ceil(length/8)+`"  class="lastpag pag"> >> </a>`
+  }
+  paginationwat.innerHTML = str;
+  paginationwat.querySelectorAll('.pag').forEach((item,index)=>{
+    item.addEventListener("click",function(){
+        watched_pag = item.dataset.page;
+        watched_body.innerHTML = "";
+        paginationwat.innerHTML = "";
+        console.log(watched_pag);
+        DisplayWatched();
+      
+    });
+  });
+}
 
 function DisplayWatched(){
-  if(!watched){
+  if(watched == null || watched?.length <= 0){
     watchhistory.style.display = "none";
     //console.log("Nothing to display");
     return;
   }
+  watchhistory.style.display = "flex";
   watched_body.innerHTML = "";
-  for (let i = 0; i < watched.length; i++) {
-    if(i==8)
+  for (let i = (watched_pag-1)*8; i < watched_pag*8; i++) {
+    if(i>=watched.length)
       break;
     watched_body.innerHTML += DisplayWatchedItem(
       watched[i].id,
@@ -163,6 +210,30 @@ function DisplayWatched(){
       item.addEventListener("click",function(){
         window.electronAPI.removeWatched(item.dataset.id,item.dataset.type);
       });
+    });
+    AddPaginationWatched(watched.length);
+    clearall_watched.addEventListener("click",()=>{
+      confirm_clear.style.backgroundColor = "var(--backgroundCol)";
+      confirm_clear.style.border =  "2px solid var(--accentcol)";
+      confirm_clear.style.width = "200px";
+      confirm_clear.style.height = "100px";
+      clear_watched_open = true;
+      
+    });
+    yes_clear.addEventListener("click",()=>{
+      window.electronAPI.clearWatched();
+      confirm_clear.style.backgroundColor = "rgba(0,0,0,0)";
+      confirm_clear.style.border =  "0px solid var(--accentcol)";
+        confirm_clear.style.width = "0px";
+        confirm_clear.style.height = "0px";
+        clear_watched_open = false;
+    });
+    no_clear.addEventListener("click",()=>{
+      confirm_clear.style.backgroundColor = "rgba(0,0,0,0)";
+      confirm_clear.style.border =  "0px solid var(--accentcol)";
+        confirm_clear.style.width = "0px";
+        confirm_clear.style.height = "0px";
+        clear_watched_open = false;
     });
 }
 
@@ -236,6 +307,7 @@ function NextPrevEpControls(type,seasons,maxseason,id){
 }
 
 function CheckIsBookmarkedPage(id,type){
+  
   if(type == "tv"){
     
       for (let i = 0; i < bookmarkes?.tv_id?.length; i++) {

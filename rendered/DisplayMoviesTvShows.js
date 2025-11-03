@@ -16,10 +16,24 @@ function AddPagination(mv){
   let str = ``;
   var add = Number(page) + 3;
   const minnum = clamp(page-3,1,maxpage);
-  const maxnum = clamp(add,1,maxpage);
+  const maxnum = clamp(add,1,Number(maxpage));
   console.log("Min page: "+minnum+" Max page: "+maxnum);
-  for (let index = minnum; index < maxnum; index++) {
+  if(page > 1){
+    str += `<a  data-page="1"  class="fisrtpag pag"> << </a>`
+    str += `<a  data-page="`+(Number(page)-1)+`"  class="pag"> < </a>`
+  }
+  if(minnum > 1){
+    str += `<span style='float:left'> ... </span>`
+  }
+  for (let index = minnum; index <= maxnum; index++) {
     str += `<a  data-page="`+index+`"  class="pag `+(index == page? 'active':"")+`">`+index+`</a>`;
+  }
+  if(maxnum < maxpage){
+    str += `<span style='float:left'> ... </span>`
+  }
+  if(page < maxpage){
+    str += `<a  data-page="`+(Number(page)+1)+`"  class="pag"> > </a>`
+    str += `<a  data-page="`+Math.ceil(maxpage)+`"  class="lastpag pag"> >> </a>`
   }
   pagination.innerHTML = str;
   pagination.querySelectorAll('.pag').forEach((item,index)=>{
@@ -32,6 +46,8 @@ function AddPagination(mv){
         DisplayTvGrid();
       }else if(mv == "search"){
         DisplaySearch();
+      }else if(mv == "filter"){
+        ShowFilterSearch();
       }
     });
   });
@@ -98,6 +114,7 @@ function DisplayTvGrid(){
 
 async function DisplayGrid(data,type) {
     const f = document.getElementById('container');
+    AddFilterEvents();
     //data["result"] = Grab20(data);
     for(let i= 0; i < data.length;i++){
         const url = 'https://api.themoviedb.org/3/'+type+'/'+(data[i].hasOwnProperty("tmdbid") ? data[i].tmdbid : data[i].tmdb_id )+'?language=en-US';

@@ -2,12 +2,19 @@
 let notif_open = false;
 let notif_displayed = false;
 let number_of_notif = 0;
+let notif_display = 5;
 content.addEventListener("click",()=>{
     if(notif_open){
         notifications_container.style.height = "0px";
         notifications_container.style.padding = "0px";
         notif_open = false;
     }
+    // if(clear_watched_open){
+    //     confirm_clear.style.border =  "0px solid var(--accentcol)";
+    //     confirm_clear.style.width = "0px";
+    //     confirm_clear.style.height = "0px";
+    //     clear_watched_open = false;
+    // }
 });
 
 
@@ -18,8 +25,10 @@ notifications.addEventListener("click",()=>{
         notifications_container.style.padding = "5px";
         notif_open = true;
         notif_num.style.display = "none";
-        bookmarkes.opened_notif = true;
-        bookmarkes.notif_num = 0;
+        if(bookmarkes){
+            bookmarkes.opened_notif = true;
+            bookmarkes.notif_num = 0;
+        }
         window.electronAPI.AddNewEpisodes(bookmarkes);
     }else{
         //notifications_container.style.display = "none";
@@ -62,14 +71,13 @@ async function GetTvShows() {
     let arr = [];
     let today = new Date();
     for(let i = 0; i < bookmarkes.tv_id?.length;i++){
-        if(!CheckIsGreater(today,new Date(bookmarkes.tv_id[i].last_update))){
-            continue;
-        }
+        
         
         
         let json = await GetTvShowJson(i);
-
+        //console.log("TV "+json.name+"- season: "+json.last_episode_to_air?.season_number+ " ep: "+json.last_episode_to_air?.episode_number);
         if(bookmarkes.tv_id[i].season == json.last_episode_to_air?.season_number && bookmarkes.tv_id[i].episode == json.last_episode_to_air?.episode_number ){
+             
             continue;
         }
         let lastair = new Date( ( json.last_episode_to_air ? json.last_episode_to_air?.air_date : json.last_air_date));
@@ -79,13 +87,13 @@ async function GetTvShows() {
             let json2 = await GetSeasonEp(json);
             var startep = (bookmarkes.tv_id[i].season == json.last_episode_to_air?.season_number ? bookmarkes.tv_id[i].episode : 0 ) 
             for (let j = startep; j < json.last_episode_to_air?.episode_number; j++) {
-                let ep_air_date = new Date(json2.episodes[j].air_date);
+                let ep_air_date = new Date(json2.episodes[j] ? json2.episodes[j].air_date : today);
                 notif_num.style.display = "block";
                 !bookmarkes.new_episodes ? bookmarkes.new_episodes = [] : "";
                 bookmarkes.new_episodes.push({
                     id : ""+json.id,
                     last_update : ""+ep_air_date.getFullYear()+"-"+(ep_air_date.getMonth()+1)+"-"+ep_air_date.getDate(),
-                    last_ep_update : json2.episodes[j].episode_number,
+                    last_ep_update : json2.episodes[j] ? json2.episodes[j].episode_number : 1,
                     last_season_update : (json.last_episode_to_air ? json.last_episode_to_air.season_number : 1),
                     poster_path: json.poster_path,
                     name: json.name
@@ -107,7 +115,56 @@ async function GetTvShows() {
     bookmarkes.notif_num = number_of_notif;
     return arr;
 }
-
+function LoadMore(res){
+    notif_display += 5;
+        for (let i = notif_display-5; i < notif_display; i++) {
+            if(i >= res.length){
+                break;
+            }
+            notifications_container.innerHTML += `<div style="position:relative;">
+            <a data-title="`+res[i].name+`" data-poster="https://image.tmdb.org/t/p/w600_and_h900_bestv2/`+res[i].poster_path+`" value="watchpage" data-ep="`+(res[i].hasOwnProperty("last_ep_update") ?res[i].last_ep_update:1)+`" 
+                    data-season="`+(res[i].hasOwnProperty("last_season_update") ?res[i].last_season_update:1)+`" 
+                        data-id="`+res[i].id+`" class="latest-ep"><li>
+                    <img width="40" height="50" style="position:relative;float:left;" src="https://image.tmdb.org/t/p/w600_and_h900_bestv2/`+res[i].poster_path+`">
+                    `+ (i < number_of_notif ? "<span class='newep'> New Episode! </span>" : "")+`
+                    <span>`+"SS "+res[i].last_season_update +` / </span>
+                    <span>`+"EP "+res[i].last_ep_update +`</span>
+                    
+                    <p>`+res[i].name+`</p>
+                    </li>
+                    </a>
+                    <span data-id="`+res[i].id+`" data-ep="`+res[i].last_ep_update+`" class="del_notif material-symbols-outlined">cancel</span>
+                    </div>`;
+            
+        }
+        if(res.length > notif_display){
+            notifications_container.appendChild(load_more);
+            load_more.addEventListener("click",()=>{LoadMore(res)});
+        }else{
+            notifications_container.removeChild(load_more);
+        }
+        document.querySelectorAll(".latest-ep").forEach((item,index)=>{
+        item.addEventListener("click",()=>{
+            console.log("Click");
+            const path = item.getAttribute("value");
+                console.log("Latest Upload click");
+                movie_id = index;
+                ismovie = "tv";
+                vidsrc = "tv";
+                isTrend = true;
+                tmdb_id = item.dataset.id;
+                titleName = item.dataset.title;
+                posterPath = item.dataset.poster;
+                ep = item.dataset.ep;
+                season = item.dataset.season;
+                apiUrl = "https://api.2embed.cc/trending?time_window=day&page=1";
+                notifications_container.style.height = "0px";
+                notifications_container.style.padding = "0px";
+                notif_open = false;
+                LoadPage(path,tmdb_id);
+        });
+    });
+}
 
 async function GetLatestEpisodes(){ 
     if(!bookmarkes){
@@ -127,9 +184,10 @@ async function GetLatestEpisodes(){
     console.log(bookmarkes.new_episodes);
     res?.sort((a,b)=>{ return new Date(b.last_update) - new Date(a.last_update) });
     
-    for (let i = 0; i < res.length; i++) {
-        // let ls = (res[i].last_episode_to_air ? res[i].last_episode_to_air.season_number : 1);
-        // let le = (res[i].last_episode_to_air ? res[i].last_episode_to_air.episode_number : 1);
+    for (let i = 0; i < notif_display; i++) {
+        if(i >= res.length){
+            break;
+        }
         notifications_container.innerHTML += `<div style="position:relative;">
         <a data-title="`+res[i].name+`" data-poster="https://image.tmdb.org/t/p/w600_and_h900_bestv2/`+res[i].poster_path+`" value="watchpage" data-ep="`+(res[i].hasOwnProperty("last_ep_update") ?res[i].last_ep_update:1)+`" 
                 data-season="`+(res[i].hasOwnProperty("last_season_update") ?res[i].last_season_update:1)+`" 
@@ -145,6 +203,11 @@ async function GetLatestEpisodes(){
                 <span data-id="`+res[i].id+`" data-ep="`+res[i].last_ep_update+`" class="del_notif material-symbols-outlined">cancel</span>
                 </div>`;
         
+    }
+    if(res.length > notif_display){
+        notifications_container.innerHTML += `
+                                                <a id="load_more">Load More</a>
+                                            `;
     }
     window.electronAPI.AddNewEpisodes(bookmarkes);
     notif_num.innerHTML = number_of_notif;
@@ -172,6 +235,7 @@ async function GetLatestEpisodes(){
                 LoadPage(path,tmdb_id);
         });
     });
+    load_more?.addEventListener("click",()=>{LoadMore(res)});
     document.querySelectorAll(".del_notif").forEach((item,index)=>{
         item.addEventListener("click",()=>{
             item.parentElement.style.display = "none";
@@ -194,4 +258,5 @@ async function GetLatestEpisodes(){
         }
     });
 }
+
 

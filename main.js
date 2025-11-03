@@ -9,6 +9,8 @@ import { ElectronBlocker } from '@ghostery/adblocker-electron';
 import { readFileSync, writeFileSync } from 'fs';
 import fs from 'fs';
 import fetch from 'cross-fetch';
+import { fileURLToPath } from 'url';
+
 const ipc = ipcMain;
 const appFolderPath = path.join(app.getPath("userData"),'UserData');
 const filePath = path.join(app.getPath("userData"),'UserData','bookmarks.json');
@@ -17,6 +19,10 @@ const colorFilePath = path.join(app.getPath("userData"),'UserData','userConfig.j
 let bookmarks;
 let watched;
 let colors;
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
+
 // ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
 //   blocker.enableBlockingInSession(session.defaultSession);
 // });
@@ -47,6 +53,15 @@ function ReadColors(){
       mainWindow.webContents.send('update-colors', colors)
   }
 }
+function ReadCountries(){
+   if (fs.existsSync(path.join(__dirname,"countries.json"))) {
+      console.log("reading userConfig.json from: "+"countries.json");
+      const data = fs.readFileSync(path.join(__dirname,"countries.json"), 'utf8');
+      const jsondata = JSON.parse(data);
+      let countries = jsondata;
+      mainWindow.webContents.send('update-countries', countries)
+  }
+}
 function RemoveWatched(id,type){
     const data = fs.readFileSync(watchFilePath, 'utf8');
     const jsondata = JSON.parse(data);
@@ -61,6 +76,12 @@ function RemoveWatched(id,type){
     const jsonData = JSON.stringify(jsondata, null, 2);
     fs.writeFileSync(watchFilePath, jsonData, 'utf8');
     mainWindow.webContents.send('update-watched', watched);
+}
+function ClearWatched(){
+  watched = [];
+  const jsonData = JSON.stringify([], null, 2);
+  fs.writeFileSync(watchFilePath, jsonData, 'utf8');
+  mainWindow.webContents.send('update-watched', watched);
 }
 function WriteToFile(id,type,season,ep){
    let today = new Date();
@@ -308,8 +329,14 @@ async function createMainWindow(){
   ipc.on("request-watched",()=>{
     ReadWatched();
   });
+  ipc.on("clear_watched",()=>{
+    ClearWatched();
+  })
   ipc.on("request-colors",()=>{
     ReadColors();
+  });
+  ipc.on("request-countries",()=>{
+    ReadCountries();
   });
   ipc.on("remove-watched",(eveent,id,type)=>{
     RemoveWatched(id,type);

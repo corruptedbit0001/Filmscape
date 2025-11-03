@@ -21,10 +21,13 @@ function ShowTooltip(item){
     tooltip_year.innerText = data.hasOwnProperty("title")?  data.release_date.split("-")[0] : data.first_air_date.split("-")[0];
     tooltip_rating.innerText = data.vote_average;
     tooltip_desc.innerText = data.overview;
-    tooltip_country.innerText = data.origin_country;
+    tooltip_country.innerText = '';
+    for(let i = 0; i < data.origin_country.length;i++){
+      tooltip_country.innerText += countries.find(item => item.iso_3166_1 == data.origin_country[i])?.english_name+", ";
+    }
     tooltip_genre.innerText = "";
     data.genres.forEach(element => {
-                  tooltip_genre.innerText += element.name+",";
+                  tooltip_genre.innerText += element.name+", ";
                 });
   });
   
@@ -212,7 +215,7 @@ async function DisplayTrendingMovies(data){
                     data2.runtime+" min",
                     data2.title,
                     "",
-                    "HD",//(data3.result ? data3.data[0].quality.split("|")[0] : "HD"),
+                    "N/A",//(data3.result ? data3.data[0].quality.split("|")[0] : "HD"),
                     "bookmark",
                     data2.imdb_id
                   );

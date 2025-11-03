@@ -79,8 +79,9 @@ function DisplayData(emburl){
                 descposter.src = (json.poster_path == null? "./images/error-img.png" : 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/'+json.poster_path);
                 
                 runtime.innerText = json.runtime+' min';
-
-                country.innerText = json.origin_country;
+                for(let i = 0; i < json.origin_country.length;i++){
+                  country.innerText += countries.find(item => item.iso_3166_1 == json.origin_country[i])?.english_name+", ";
+                }
                 json.genres.forEach(element => {
                   genre.innerText += element.name+",";
                 });

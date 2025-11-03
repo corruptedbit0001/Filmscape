@@ -11,9 +11,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestBookmarks:() => ipcRenderer.send("request-bookmarks"),
   requestWatched:() => ipcRenderer.send("request-watched"),
   removeWatched:(id,type) => ipcRenderer.send("remove-watched", id, type),
+  clearWatched:() => ipcRenderer.send("clear_watched"),
   AddColors: (maincol,maintextcol,sectextcol,backcol) => ipcRenderer.send("update-colrs",maincol,maintextcol,sectextcol,backcol),
   requestColors : () => ipcRenderer.send("request-colors"),
   onUpdateColors : (callback) => ipcRenderer.on('update-colors', (_event, value) => callback(value)),
   AddNewEpisodes : (episodes) => ipcRenderer.send("update-new-episodes",episodes),
   getAppVersion : () => ipcRenderer.invoke("get-app-version"),
+  requestCountries : ()=> ipcRenderer.send("request-countries"),
+  onUpdateCountries : (callback)=>  ipcRenderer.on('update-countries', (_event, value) => callback(value)),
 })

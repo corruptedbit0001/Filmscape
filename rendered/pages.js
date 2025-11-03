@@ -95,11 +95,13 @@ function LoadPage($path,emburl,fromh = false){
         ep = 1;
         season = 1;
         tvlistener = false;
+        type_selected = "movie";
         DisplayMoviesGrid();
       }else if($path == "tvshowspage"){
         page = 1;
         ep = 1;
         season = 1;
+        type_selected = "tv";
         tvlistener = false;
         DisplayTvGrid();
       }else if($path == "homepage"){

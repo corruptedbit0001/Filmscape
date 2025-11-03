@@ -35,8 +35,22 @@ function AddPaginationBTV(type,length){
   //console.log("Min page: "+minnum+" Max page: "+maxnum);
   if(minnum == maxnum)
     return;
+  if((type == "tv"?pageBTv:pageBmov) > 1){
+    str += `<a  data-page="1"  class="fisrtpag pag"> << </a>`
+    str += `<a  data-page="`+(Number((type == "tv"?pageBTv:pageBmov))-1)+`"  class="pag"> < </a>`
+  }
+  if(minnum > 1){
+    str += `<span style='float:left'> ... </span>`
+  }
   for (let index = minnum; index <= maxnum; index++) {
     str += `<a  data-page="`+index+`"  class="pag `+(index == (type == "tv"?pageBTv:pageBmov)? 'active':"")+`">`+index+`</a>`;
+  }
+  if(maxnum*10 < length){
+    str += `<span style='float:left'> ... </span>`
+  }
+  if((type == "tv"?pageBTv:pageBmov)*10 < length){
+    str += `<a  data-page="`+(Number((type == "tv"?pageBTv:pageBmov))+1)+`"  class="pag"> > </a>`
+    str += `<a  data-page="`+Math.ceil(length/10)+`"  class="lastpag pag"> >> </a>`
   }
   if(type == "tv"){
     TVPag(str);

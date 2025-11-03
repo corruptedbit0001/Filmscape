@@ -1,9 +1,25 @@
 <div id="homecontainer">
     <div id="watchhistory">
+        <div style="position: relative;text-align: right;">
+            <span style="position: absolute;right: 0;top: 50px;padding-right: 30px;"><a id="clearall_watched"><span  class="material-symbols-outlined">delete</span> Clear Watchlist </a></span>
+        </div>
         <h1> <span class="material-symbols-outlined">
         slideshow
         </span>Continue Watching</h1>
+        
         <div id="watched_body"></div>
+        <div id="paginationwat" class="pagination">
+        
+        </div>
+        <div id="confirm_clear">
+            <div><p>Clear all watched history?</p></div>
+                <div style="
+                    display: inline-flex;
+                    flex-direction: row;
+                    flex: 1;
+                    width: 100%;
+                "> <span id="yes_clear" class="popup">yes</span> <span id="no_clear" class="popup" >no</span> </div>
+        </div>
     </div>
 <h1> <span class="material-symbols-outlined">
 slideshow
